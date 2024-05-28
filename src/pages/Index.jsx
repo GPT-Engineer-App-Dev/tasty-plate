@@ -1,6 +1,6 @@
-import { Box, Container, VStack, Text, Heading, Image, Input, Textarea, Button, HStack, Link, Flex } from "@chakra-ui/react";
+import { Box, Container, VStack, Text, Heading, Image, Input, Textarea, Button, HStack, Link, Flex, IconButton } from "@chakra-ui/react";
 import { useState } from "react";
-import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaStar } from "react-icons/fa";
 
 const Index = () => {
   const [recipeTitle, setRecipeTitle] = useState("");
@@ -21,6 +21,7 @@ const Index = () => {
       ingredients: recipeIngredients,
       instructions: recipeInstructions,
       image: recipeImage,
+      ratings: [],
     };
     setRecipes([...recipes, newRecipe]);
     setRecipeTitle("");
@@ -28,6 +29,24 @@ const Index = () => {
     setRecipeIngredients("");
     setRecipeInstructions("");
     setRecipeImage("");
+  };
+
+  const handleRating = (recipeIndex, rating) => {
+    setRecipes((prevRecipes) => {
+      const updatedRecipes = [...prevRecipes];
+      const recipe = updatedRecipes[recipeIndex];
+      if (!recipe.hasRated) {
+        recipe.ratings.push(rating);
+        recipe.hasRated = true;
+      }
+      return updatedRecipes;
+    });
+  };
+
+  const calculateAverageRating = (ratings) => {
+    if (ratings.length === 0) return 0;
+    const sum = ratings.reduce((a, b) => a + b, 0);
+    return (sum / ratings.length).toFixed(1);
   };
 
   return (
@@ -63,7 +82,19 @@ const Index = () => {
                 <Heading as="h4" size="md" mb={2}>{recipe.title}</Heading>
                 <Text mb={2}><strong>Description:</strong> {recipe.description}</Text>
                 <Text mb={2}><strong>Ingredients:</strong> {recipe.ingredients}</Text>
-                <Text><strong>Instructions:</strong> {recipe.instructions}</Text>
+                <Text mb={2}><strong>Instructions:</strong> {recipe.instructions}</Text>
+                <Text mb={2}><strong>Average Rating:</strong> {calculateAverageRating(recipe.ratings)} / 5</Text>
+                <HStack spacing={1}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <IconButton
+                      key={star}
+                      icon={<FaStar />}
+                      colorScheme={recipe.ratings.includes(star) ? "yellow" : "gray"}
+                      onClick={() => handleRating(index, star)}
+                      isDisabled={recipe.hasRated}
+                    />
+                  ))}
+                </HStack>
               </Box>
             </Box>
           ))}

@@ -1,7 +1,35 @@
 import { Box, Container, VStack, Text, Heading, Image, Input, Textarea, Button, HStack, Link, Flex } from "@chakra-ui/react";
+import { useState } from "react";
 import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 const Index = () => {
+  const [recipeTitle, setRecipeTitle] = useState("");
+  const [recipeDescription, setRecipeDescription] = useState("");
+  const [recipeIngredients, setRecipeIngredients] = useState("");
+  const [recipeInstructions, setRecipeInstructions] = useState("");
+  const [recipeImage, setRecipeImage] = useState("");
+  const [recipes, setRecipes] = useState([]);
+
+  const handleSubmit = () => {
+    if (!recipeTitle || !recipeDescription || !recipeIngredients || !recipeInstructions || !recipeImage) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    const newRecipe = {
+      title: recipeTitle,
+      description: recipeDescription,
+      ingredients: recipeIngredients,
+      instructions: recipeInstructions,
+      image: recipeImage,
+    };
+    setRecipes([...recipes, newRecipe]);
+    setRecipeTitle("");
+    setRecipeDescription("");
+    setRecipeIngredients("");
+    setRecipeInstructions("");
+    setRecipeImage("");
+  };
+
   return (
     <Container maxW="container.xl" p={0}>
       {/* Navigation Bar */}
@@ -28,21 +56,17 @@ const Index = () => {
       <Box id="recipes" py={20} px={8}>
         <Heading as="h3" size="xl" mb={8} textAlign="center">Our Recipes</Heading>
         <Flex wrap="wrap" justify="center" spacing={8}>
-          <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" m={4}>
-            <Image src="https://via.placeholder.com/400" alt="Recipe 1" />
-            <Box p={6}>
-              <Heading as="h4" size="md" mb={2}>Recipe Title 1</Heading>
-              <Text>Brief description of the recipe.</Text>
+          {recipes.map((recipe, index) => (
+            <Box key={index} maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" m={4}>
+              <Image src={recipe.image} alt={recipe.title} />
+              <Box p={6}>
+                <Heading as="h4" size="md" mb={2}>{recipe.title}</Heading>
+                <Text mb={2}><strong>Description:</strong> {recipe.description}</Text>
+                <Text mb={2}><strong>Ingredients:</strong> {recipe.ingredients}</Text>
+                <Text><strong>Instructions:</strong> {recipe.instructions}</Text>
+              </Box>
             </Box>
-          </Box>
-          <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden" m={4}>
-            <Image src="https://via.placeholder.com/400" alt="Recipe 2" />
-            <Box p={6}>
-              <Heading as="h4" size="md" mb={2}>Recipe Title 2</Heading>
-              <Text>Brief description of the recipe.</Text>
-            </Box>
-          </Box>
-          {/* Add more recipe cards as needed */}
+          ))}
         </Flex>
       </Box>
 
@@ -50,10 +74,12 @@ const Index = () => {
       <Box id="submit" bg="gray.100" py={20} px={8}>
         <Heading as="h3" size="xl" mb={8} textAlign="center">Submit Your Recipe</Heading>
         <VStack spacing={4} maxW="lg" mx="auto">
-          <Input placeholder="Recipe Title" size="lg" />
-          <Textarea placeholder="Recipe Description" size="lg" />
-          <Input placeholder="Image URL" size="lg" />
-          <Button colorScheme="teal" size="lg">Submit</Button>
+          <Input placeholder="Recipe Title" size="lg" value={recipeTitle} onChange={(e) => setRecipeTitle(e.target.value)} />
+          <Textarea placeholder="Recipe Description" size="lg" value={recipeDescription} onChange={(e) => setRecipeDescription(e.target.value)} />
+          <Textarea placeholder="Ingredients" size="lg" value={recipeIngredients} onChange={(e) => setRecipeIngredients(e.target.value)} />
+          <Textarea placeholder="Instructions" size="lg" value={recipeInstructions} onChange={(e) => setRecipeInstructions(e.target.value)} />
+          <Input placeholder="Image URL" size="lg" value={recipeImage} onChange={(e) => setRecipeImage(e.target.value)} />
+          <Button colorScheme="teal" size="lg" onClick={handleSubmit}>Submit</Button>
         </VStack>
       </Box>
 
